@@ -138,6 +138,7 @@ summary{padding:14px 0;color:var(--gold);font-weight:700;cursor:pointer}
 .soc a{display:grid;place-items:center;width:52px;height:52px;border:2px solid var(--cream);border-radius:50%;font-size:1.3rem;text-decoration:none;transition:background .2s,color .2s}
 .soc a:hover{background:var(--cream);color:var(--red)}
 footer{padding:50px 20px calc(28px + env(safe-area-inset-bottom));text-align:center;color:var(--muted);font-size:.9rem}
+footer small[hidden]{display:none}
 footer small{display:block;margin-top:6px;font-size:.75rem;opacity:.55}
 
 /* LIGHTBOX */
@@ -384,15 +385,15 @@ $('#up').innerHTML=up.length?up.map((e,i)=>row(e,0,!i)).join(''):'<li class="emp
 $('#past').innerHTML=past.map(e=>row(e,1)).join('');
 $('#pastbox').hidden=!past.length;
 
-/* počítadlo návštev (zadarmo cez counterapi.dev; pri refreshi v tej istej relácii sa nepripočíta znova) */
+/* počítadlo návštev (zadarmo cez Abacus; pri refreshi v tej istej relácii sa nepripočíta znova) */
 (()=>{
-  const NS='patrik-lukac-popi-web',KEY='navstevy',base='https://api.counterapi.dev/v1/'+NS+'/'+KEY;
+  const base='https://abacus.jasoncameron.dev/',ID='patrik-lukac-popi-web/navstevy';
   let seen=false;try{seen=sessionStorage.getItem('v')}catch(e){}
-  fetch(seen?base:base+'/up').then(r=>r.json()).then(d=>{
-    if(typeof d.count!=='number')return;
+  fetch(base+(seen?'get/':'hit/')+ID).then(r=>r.json()).then(d=>{
+    const n=Number(d.value);if(!isFinite(n))return;
     try{sessionStorage.setItem('v',1)}catch(e){}
-    $('#vn').textContent=d.count.toLocaleString('sk-SK');$('#visits').hidden=false;
-  }).catch(()=>{}); /* ak služba nejde, počítadlo sa jednoducho nezobrazí */
+    $('#vn').textContent=n.toLocaleString('sk-SK');$('#visits').hidden=false;
+  }).catch(()=>{}); /* ak služba nejde, počítadlo sa nezobrazí */
 })();
 
 /* ukazovateľ scrollu + animácie pri posúvaní (vypnuté pri „znížený pohyb“) */
